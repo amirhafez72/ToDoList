@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="assets/library/fontawesome/fontawesome-free-6.6.0-web/css/all.min.css"> -->
+    <link rel="stylesheet" href="assets/style/style.css" />
+    <title>To Do List</title>
+  </head>
+  <body>
+    <script src="assets/library/vue/vue.global.js"></script>
+    <nav class="toolsbar">
+      <ul class="">
+        <li><i class="fa-solid fa-clipboard-list"></i></li>
+        <li><i class="fa-solid fa-list"></i></li>
+        <li><i class="fa-solid fa-trash-can"></i></li>
+      </ul>
+    </nav>
+    <main class="main" id="app">
+      <div class="header-main">
+        <div class="header-logo-container"><img src="assets/img/OIG3.jfif" alt="" class="header-logo"></div>
+        <div>
+          <h1 class="header-title">{{message}}</h1>
+          <div v-if="showItemForm" class="form-container">
+            <form @submit.prevent="addNewTask">
+              <input type="text" name="" id="" class="input-task" v-model="newTitle">
+              <button type="submit" class="submit-button">Add New Task <i class="fa-regular fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="body-main">
+        <div class="table">
+          <div class="table-button">
+            <div class="table-button-add table-button-item" @click="changeDisplayInput">Add New Tasks</div>
+            <div class="table-button-completed table-button-item" @click="completedAllSelectedTasks">Completed</div>
+          </div>
+          <div class="table-title">
+            <div class="table-title-row table-title-item">
+              <!-- <i class="fa-regular fa-circle"></i> -->
+               <span class="item-task-icon" :class="{'item-task-select': allTasksSelected == 2 || allTasksSelected == 1}" @click="selectingAllTasks">
+                <i v-if="allTasksSelected == 2" class="fa-solid fa-check-double"></i>
+                <i v-else-if="allTasksSelected == 1" class="fa-solid fa-minus"></i>
+               </span>
+            </div>
+            <div class="table-title-text table-title-item">Title</div>
+            <div class="table-title-completed table-title-item">Completed</div>
+            <div class="table-title-unfinished table-title-item">Unfinished</div>
+            <div class="table-title-remove table-title-item">Delete</div>
+          </div>
+          <div class="task">
+            <div v-for="(todoItem,index) in filteredItems" class="item-task" :key="index" draggable="true" @dragstart="onDragStart(index)"
+            @dragover.prevent @drop="onDrop(index)">
+              <div class="item-task-row item-task-cell"><i class="fa-solid item-task-icon" :class="{'item-task-select fa-check': todoItem.selected}" @click="selectingTask(index)"></i></div>
+              <div class="item-task-text item-task-cell" :class="{'text-line': todoItem.completed}">{{todoItem.title}}</div>
+              <div class="item-task-completed item-task-cell">
+                <i class="fa-solid fa-check item-task-icon item-task-check" :class="{'item-task-check-active': todoItem.completed && !todoItem.unfinished }" @click="completedTask(index)"></i>
+              </div>
+              <div class="item-task-unfinished item-task-cell"><i class="fa-solid fa-minus item-task-icon item-task-undone" :class="{'item-task-undone-active': !todoItem.completed && todoItem.unfinished}" @click="unfinishedTask(index)"></i></div>
+              <div class="item-task-remove item-task-cell"><i class="fa-solid fa-xmark item-task-icon item-task-delete" @click="removeTask(todoItem)"></i></div>
+            </div>
+            <!-- <div class="item-task">
+              <div class="item-task-row item-task-cell">Row</div>
+              <div class="item-task-text item-task-cell">Title</div>
+              <div class="item-task-completed item-task-cell">
+                <i class="fa-solid fa-check item-task-icon item-task-check-active"></i>
+              </div>
+              <div class="item-task-unfinished item-task-cell"><i class="fa-solid fa-minus item-task-icon item-task-undone-active"></i></div>
+              <div class="item-task-remove item-task-cell"><i class="fa-solid fa-xmark item-task-icon item-task-delete"></i></div>
+            </div> -->
+          </div>
+        </div>
+        <div class="filter">
+          <div class="filter-button all" @click="showAllTasks">
+            <i class="fa-solid fa-list-check filter-button-icon"></i>
+            <span class="filter-button-text">All</span>
+            <!-- <i class="fa-solid fa-calenda  r-check"></i> -->
+          </div>
+          <div class="filter-button done" @click="completedSelect">
+            <i class="fa-regular fa-square-check filter-button-icon"></i>
+            <span class="filter-button-text">Completed</span>
+          </div>
+          <div class="filter-button undone" @click="unfinishedSelect">
+            <i class="fa-regular fa-square-minus filter-button-icon"></i>
+            <span class="filter-button-text">Unfinished</span>
+          </div>
+          <div class="filter-button filter-button-save" @click="saveToDoList">
+            <i class="fa-regular fa-floppy-disk filter-button-icon"></i>
+            <span class="filter-button-text">Save</span>
+          </div>
+          <div class="filter-button delete filter-button-delete" @click="removeAllSelectedTasks">
+            <i class="fa-solid fa-trash-can filter-button-icon"></i>
+            <span class="filter-button-text">Delete</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="assets/script/scriptVue.js"></script>
+  </body>
+</html>
