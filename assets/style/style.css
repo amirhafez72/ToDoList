@@ -379,6 +379,10 @@ li{
     html{
         font-size: 10px;
     }
+    .table{
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
     .header-main{
         margin: 1.5rem ;
     }
