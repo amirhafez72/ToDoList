@@ -31,7 +31,7 @@ body{
     display: flex;
     height: 100vh;
     margin: 0;
-    font-family: cursive;
+    font-family: cursive, sans-serif;
     box-shadow: inset rgba(148, 174, 181, 1) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     overflow: hidden;
 }
